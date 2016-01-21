@@ -11,7 +11,8 @@ See [blog.md --My personal blog](blog.md) to know about product idea and its mat
 ###Developer tools:
 - WebStorm: IDE for javascript
 - Groc: [literate programming tool](https://github.com/nevir/groc)
-
+- gulp
+- bower
 As it has become tedious to understand, maintain, configure the same development environment on multiple machines
 using cordova, In the below section, cordova, I am gonna update all the plugins needed for the app. 
 
@@ -23,12 +24,13 @@ pom.xml is analogous to [config.xml](config.xml)
 
 
 ###Cordova:
-
-
+cordova-plugin-geolocation
 
 From here, there will be daily updates on work
 `Date: 20-01-2016`
-
+no major development
+`Date: 20-01-2017`
+Installed ngCordova, a wrapper on cordova.js to better use it with angularjs
 
 
 
