@@ -29,8 +29,10 @@ cordova-plugin-geolocation
 From here, there will be daily updates on work
 `Date: 20-01-2016`
 no major development
-`Date: 20-01-2017`
+`Date: 21-01-2016`
 Installed ngCordova, a wrapper on cordova.js to better use it with angularjs
+Using this blog by [joshmorony](http://www.joshmorony.com/integrating-google-maps-with-an-ionic-application/).. integrating googlemaps with the app
 
 
-
+set ANDROID_HOME="C:\Program Files\Android"
+set adb="C:\Program Files\Android\android-sdk\platform-tools\adb"
