@@ -1,7 +1,7 @@
 angular.module('starter.controllers', [])
 
   .controller('MapCtrl', function ($scope, $state, $cordovaGeolocation) {
-    var options = {timeout: 10000, enableHighAccuracy: true};
+    /*var options = {timeout: 10000, enableHighAccuracy: true};
 
     $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
@@ -34,6 +34,6 @@ angular.module('starter.controllers', [])
 
     }, function (error) {
       console.log("Could not get location");
-    });
+    });*/
   });
 
