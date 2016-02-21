@@ -37,6 +37,8 @@ no major development
 Installed ngCordova, a wrapper on cordova.js to better use it with angularjs
 Using this blog by [joshmorony](http://www.joshmorony.com/integrating-google-maps-with-an-ionic-application/).. integrating googlemaps with the app
 
+http://stackoverflow.com/questions/27768730/ionic-get-users-phone-number
+
 `Update on 20-02-2016`
 * MongoDB as store for parking spaces. 
 * Basic webservice to return parking spaces near the user location

@@ -1,10 +1,21 @@
 angular.module('app.controllers', [])
 
-  .controller('findParkCtrl', function ($scope) {
+  .controller('findParkCtrl', function ($scope, GoogleMaps) {
 
+    $scope.focusCurrentLocation = function () {
+      return GoogleMaps.init();
+    };
+
+    $scope.parkVehicle = function () {
+      console.log("updating vehicle position");
+      GoogleMaps.updateLocation()
+    };
   })
 
   .controller('locateVacateCtrl', function ($scope) {
+    $scope.vacate = function (){
+
+    }
 
   })
 

@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ngCordova'])
 
-  .run(function ($ionicPlatform, GoogleMaps) {
+  .run(function ($ionicPlatform, GoogleMaps, user) {
     $ionicPlatform.ready(function () {
       if (window.cordova && window.cordova.plugins.Keyboard) {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -22,6 +22,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
       if (window.StatusBar) {
         StatusBar.styleDefault();
       }
+      user.initUUID();
       GoogleMaps.init();
     });
   });

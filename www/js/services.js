@@ -1,6 +1,22 @@
 angular.module('app.services', [])
 
-  .factory('Markers', function ($http) {
+  .factory('user', function ($cordovaDevice) {
+    var uuid = null;
+    return {
+      initUUID: function () {
+        console.log("in init uuid");
+        document.addEventListener("deviceready", function () {
+          uuid = $cordovaDevice.getUUID();
+          console.log(uuid + " uuid from init");
+        }, false);
+      },
+      getId: function () {
+        console.log(uuid + " from getId");
+        return uuid;
+      }
+    }
+  })
+  .factory('Markers', function ($http, user) {
 
     var markers = [];
 
@@ -14,6 +30,22 @@ angular.module('app.services', [])
             return markers;
           });
 
+      },
+      setVehicleLocation: function (lat, lng) {
+        return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
+            "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId())
+          .then(function (response) {
+            markers = response;
+            return markers;
+          });
+      },
+      vacateSpace: function(){
+        return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
+            "/v1/park/vacate/"+ "/for/" + user.getId())
+          .then(function (response) {
+            markers = response;
+            return markers;
+          });
       }
     }
   })
@@ -22,32 +54,51 @@ angular.module('app.services', [])
     var apiKey = false;
     var map = null;
 
-    function initMap() {
-
+    function refreshMap() {
       var options = {timeout: 10000, enableHighAccuracy: true};
-
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
         var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         var mapOptions = {
           center: latLng,
-          zoom: 15,
+          zoom: 18,
+          disableDefaultUI: true, // a way to quickly hide all controls
+          mapTypeControl: false,
+          scaleControl: true,
+          zoomControl: false,
+          zoomControlOptions: {
+            style: google.maps.ZoomControlStyle.LARGE
+          },
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
         map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        map.setCenter(latLng);
         //Wait until the map is loaded
         google.maps.event.addListenerOnce(map, 'idle', function () {
           addMarkerToMap(latLng, "you");
           //Load the markers
-          loadMarkers(position.coords.latitude, position.coords.longitude);
+          //loadMarkers(position.coords.latitude, position.coords.longitude);
 
         });
 
       }, function (error) {
         alert("Could not get location: " + error);
       });
+    }
 
+    function initMap() {
+      refreshMap();
+
+    }
+
+    function tagLocation() {
+      var options = {timeout: 10000, enableHighAccuracy: true};
+      $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
+        Markers.setVehicleLocation(position.coords.latitude, position.coords.longitude);
+      }, function (error) {
+        alert("could not tag location!. Please try again")
+      });
     }
 
     function addMarkerToMap(markerPos, name) {
@@ -101,6 +152,9 @@ angular.module('app.services', [])
     return {
       init: function () {
         initMap();
+      },
+      updateLocation: function () {
+        tagLocation();
       }
     }
 
