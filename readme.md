@@ -26,6 +26,10 @@ pom.xml is analogous to [config.xml](config.xml)
 ###Cordova:
 cordova-plugin-geolocation
 
+set ANDROID_HOME="C:\Program Files\Android"
+
+set adb="C:\Program Files\Android\android-sdk\platform-tools\adb"
+
 From here, there will be daily updates on work
 `Date: 20-01-2016`
 no major development
@@ -33,6 +37,7 @@ no major development
 Installed ngCordova, a wrapper on cordova.js to better use it with angularjs
 Using this blog by [joshmorony](http://www.joshmorony.com/integrating-google-maps-with-an-ionic-application/).. integrating googlemaps with the app
 
-
-set ANDROID_HOME="C:\Program Files\Android"
-set adb="C:\Program Files\Android\android-sdk\platform-tools\adb"
+`Update on 20-02-2016`
+* MongoDB as store for parking spaces. 
+* Basic webservice to return parking spaces near the user location
+*Integration with the app to get parking spaces near you -- very basic

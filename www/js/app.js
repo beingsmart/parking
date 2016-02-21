@@ -3,7 +3,10 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova'])
+// 'starter.services' is found in services.js
+// 'starter.controllers' is found in controllers.js
+angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ngCordova'])
+
   .run(function ($ionicPlatform, GoogleMaps) {
     $ionicPlatform.ready(function () {
       if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -21,16 +24,4 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
       }
       GoogleMaps.init();
     });
-  })
-  .config(function ($stateProvider, $urlRouterProvider) {
-
-    $stateProvider
-      .state('map', {
-        url: '/',
-        templateUrl: 'templates/map.html',
-        controller: 'MapCtrl'
-      });
-
-    $urlRouterProvider.otherwise("/");
-
   });

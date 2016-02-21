@@ -1,4 +1,4 @@
-angular.module('starter.services', [])
+angular.module('app.services', [])
 
   .factory('Markers', function ($http) {
 
@@ -105,4 +105,9 @@ angular.module('starter.services', [])
     }
 
   });
+
+
+/*  .service('BlankService', [function () {
+
+ }]);*/
 
