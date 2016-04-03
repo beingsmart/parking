@@ -12,10 +12,13 @@ angular.module('app.controllers', [])
     };
   })
 
-  .controller('locateVacateCtrl', function ($scope) {
+  .controller('locateVacateCtrl', function ($scope, GoogleMaps ) {
     $scope.vacate = function (){
 
-    }
+    };
+    $scope.navigateToCar = function (){
+      GoogleMaps.navigateToDest();
+    };
 
   })
 

@@ -26,6 +26,10 @@ pom.xml is analogous to [config.xml](config.xml)
 ###Cordova:
 cordova-plugin-geolocation
 
+plugin.google.maps aka cordova-plugin-googlemaps
+
+cordova plugin add plugin-name --save (to save plugin to config.xml
+
 set ANDROID_HOME="C:\Program Files\Android"
 
 set adb="C:\Program Files\Android\android-sdk\platform-tools\adb"
