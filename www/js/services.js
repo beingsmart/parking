@@ -49,7 +49,7 @@ angular.module('app.services', [])
       }
     }
   })
-  .factory('GoogleMaps', function ($cordovaGeolocation, $cordovaLaunchNavigator, Markers) {
+  .factory('GoogleMaps', function ($cordovaGeolocation, $cordovaLaunchNavigator, $http, Markers) {
 
     var apiKey = false;
     var map = null;
@@ -102,34 +102,29 @@ angular.module('app.services', [])
     }
 
     function launchNavigatorApp() {
-      // var options = {timeout: 10000, enableHighAccuracy: true};
-      // $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
-      //   startLoc = [position.coords.latitude, position.coords.longitude];
-      //   $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-      //       "/v1/park/locate/for/" + user.getId())
-      //     .then(function (response) {
-      //       endLoc = response.cor;
-      //       return markers;
-      //     });
-      //
-      // });
-      function successFn() {
-        console.log("in success");
-      }
-
-      function errorFn() {
-        console.log("in error");
-      }
-
-      //$cordovaLaunchNavigator.navigate(lat, lon, successFn, errorFn);
-      $cordovaLaunchNavigator.navigate("Bangalore", {
-        start: "Hyderabad",
-        enableDebug: true
-      }).then(function () {
-        alert("Navigator launched");
-      }, function (err) {
-        alert(err);
+      var options = {timeout: 10000, enableHighAccuracy: true};
+      $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
+        var startLoc = [position.coords.latitude, position.coords.longitude];
+        $http.get("http://parkingserver-openbigdata.rhcloud.com" +
+            "/v1/park/locate/for/" + "1")
+          .then(function (response) {
+            console.log(response['data']['coordinates']);
+            var loca = [];
+            loca[0]=response['data']['coordinates'][1];
+            loca[1]=response['data']['coordinates'][0];
+            $cordovaLaunchNavigator.navigate(loca, {
+              start: startLoc,
+              enableDebug: true
+            }).then(function () {
+              alert("Navigator launched");
+            }, function (err) {
+              alert(err);
+            });
+          });
+      },  function (error) {
+        alert("could not tag location!. Please try again")
       });
+
     }
 
     function addMarkerToMap(markerPos, name) {
