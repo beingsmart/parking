@@ -19,12 +19,6 @@ angular.module('app.routes', [])
         url: '/locate-vacate',
         templateUrl: 'templates/locateVacate.html',
         controller: 'locateVacateCtrl'
-      })
-
-      .state('map', {
-        url: '/map',
-        templateUrl: 'templates/map.html',
-        controller: 'MapCtrl'
       });
 
     $urlRouterProvider.otherwise('/')
