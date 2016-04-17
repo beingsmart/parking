@@ -1,6 +1,6 @@
 angular.module('app.services', [])
 
-  .factory('user', function ($cordovaDevice) {
+  .factory('user', function ($cordovaDevice, $cordovaSQLite) {
     var uuid = null;
     return {
       initUUID: function () {
@@ -39,11 +39,20 @@ angular.module('app.services', [])
             return markers;
           });
       },
-      vacateSpace: function(){
+      locateSpace: function () {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/vacate/"+ "/for/" + user.getId())
+            "/v1/park/locate/for/" + user.getId())
           .then(function (response) {
-            markers = response;
+            markers = response.data;
+            console.log(markers);
+            return markers;
+          });
+      },
+      vacateSpace: function () {
+        return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
+            "/v1/park/vacate/" + "/for/" + user.getId())
+          .then(function (response) {
+            markers = response.data;
             return markers;
           });
       }
@@ -105,14 +114,12 @@ angular.module('app.services', [])
       var options = {timeout: 10000, enableHighAccuracy: true};
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
         var startLoc = [position.coords.latitude, position.coords.longitude];
-        $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/locate/for/" + "1")
-          .then(function (response) {
-            console.log(response['data']['coordinates']);
-            var loca = [];
-            loca[0]=response['data']['coordinates'][1];
-            loca[1]=response['data']['coordinates'][0];
-            $cordovaLaunchNavigator.navigate(loca, {
+        Markers.locateSpace().then(function (endLoc){
+          console.log(endLoc['coordinates']);
+          var loca = [];
+          loca[0] = endLoc['coordinates'][1];
+          loca[1] = endLoc['coordinates'][0];
+          $cordovaLaunchNavigator.navigate(loca, {
               start: startLoc,
               enableDebug: true
             }).then(function () {
@@ -120,8 +127,9 @@ angular.module('app.services', [])
             }, function (err) {
               alert(err);
             });
-          });
-      },  function (error) {
+        });
+        
+      }, function (error) {
         alert("could not tag location!. Please try again")
       });
 
@@ -188,9 +196,3 @@ angular.module('app.services', [])
     }
 
   });
-
-
-/*  .service('BlankService', [function () {
-
- }]);*/
-
