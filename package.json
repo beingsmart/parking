@@ -25,6 +25,10 @@
     {
       "locator": "https://github.com/dpa99c/phonegap-launch-navigator.git",
       "id": "uk.co.workingedge.phonegap.plugin.launchnavigator"
+    },
+    {
+      "locator": "https://github.com/litehelpers/Cordova-sqlite-storage.git",
+      "id": "cordova-sqlite-storage"
     }
   ],
   "cordovaPlatforms": [
