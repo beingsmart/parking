@@ -1,5 +1,5 @@
 {
-  "name": "parking",
+  "name": "Smart Assist",
   "app_id": "",
   "gulpStartupTasks": [
     "sass",

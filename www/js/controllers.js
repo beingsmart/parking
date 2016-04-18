@@ -13,8 +13,11 @@ angular.module('app.controllers', [])
   })
 
   .controller('locateVacateCtrl', function ($scope, GoogleMaps) {
+    $scope.focusCarLocation = function () {
+      GoogleMaps.initMapOfCar()
+    }
     $scope.vacate = function () {
-
+        GoogleMaps.vacateLocation()
     };
     $scope.navigateToCar = function () {
       GoogleMaps.navigateToDest();

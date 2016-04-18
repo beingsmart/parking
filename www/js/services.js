@@ -44,13 +44,16 @@ angular.module('app.services', [])
             "/v1/park/locate/for/" + user.getId())
           .then(function (response) {
             markers = response.data;
-            console.log(markers);
-            return markers;
+            console.log(markers['coordinates']);
+            var loca = [];
+            loca[0] = markers['coordinates'][1];
+            loca[1] = markers['coordinates'][0];
+            return loca;
           });
       },
       vacateSpace: function () {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/vacate/" + "/for/" + user.getId())
+            "/v1/park/vacate/for/" + user.getId())
           .then(function (response) {
             markers = response.data;
             return markers;
@@ -96,6 +99,36 @@ angular.module('app.services', [])
       });
     }
 
+    function refreshMapWithCoordinates() {
+      var options = {timeout: 10000, enableHighAccuracy: true};
+        Markers.locateSpace().then(function (endLoc){
+          var latLng = new google.maps.LatLng(endLoc[0], endLoc[1]);
+          var mapOptions = {
+            center: latLng,
+            zoom: 18,
+            disableDefaultUI: true, // a way to quickly hide all controls
+            mapTypeControl: false,
+            scaleControl: true,
+            zoomControl: false,
+            zoomControlOptions: {
+              style: google.maps.ZoomControlStyle.LARGE
+            },
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+
+          map = new google.maps.Map(document.getElementById("mapOfCar"), mapOptions);
+          map.setCenter(latLng);
+          //Wait until the map is loaded
+          google.maps.event.addListenerOnce(map, 'idle', function () {
+            addMarkerToMap(latLng, "Car");
+            //Load the markers
+            //loadMarkers(position.coords.latitude, position.coords.longitude);
+
+          });
+
+      });
+    }
+
     function initMap() {
       refreshMap();
 
@@ -115,11 +148,7 @@ angular.module('app.services', [])
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
         var startLoc = [position.coords.latitude, position.coords.longitude];
         Markers.locateSpace().then(function (endLoc){
-          console.log(endLoc['coordinates']);
-          var loca = [];
-          loca[0] = endLoc['coordinates'][1];
-          loca[1] = endLoc['coordinates'][0];
-          $cordovaLaunchNavigator.navigate(loca, {
+          $cordovaLaunchNavigator.navigate(endLoc, {
               start: startLoc,
               enableDebug: true
             }).then(function () {
@@ -192,6 +221,12 @@ angular.module('app.services', [])
       },
       navigateToDest: function () {
         launchNavigatorApp();
+      },
+      initMapOfCar: function () {
+        refreshMapWithCoordinates();
+      },
+      vacateLocation: function () {
+        Markers.vacateSpace();
       }
     }
 
