@@ -11,9 +11,6 @@ angular.module('app.controllers', [])
       GoogleMaps.updateLocation()
     };
 
-    $scope.focusCarLocation = function () {
-      GoogleMaps.initMapOfCar()
-    };
 
     $scope.vacate = function () {
       GoogleMaps.vacateLocation()
@@ -31,9 +28,6 @@ angular.module('app.controllers', [])
   })
 
   .controller('locateVacateCtrl', function ($scope, GoogleMaps) {
-    $scope.focusCarLocation = function () {
-      GoogleMaps.initMapOfCar()
-    };
     $scope.vacate = function () {
         GoogleMaps.vacateLocation()
     };

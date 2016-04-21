@@ -2,7 +2,8 @@ angular.module('app.services', [])
 
   .factory('user', function ($cordovaDevice, $http) {
     var uuid = null;
-    var isParked=null;
+    var isParked = null;
+
     function determineParkingStatus(uuid) {
       $http.get("http://parkingserver-openbigdata.rhcloud.com" +
           "/v1/park/locate/for/" + uuid)
@@ -11,10 +12,11 @@ angular.module('app.services', [])
           return markers['coordinates'] != null
 
         }).then(function (status) {
-        isParked=status;
+        isParked = status;
 
       });
     }
+
     return {
       initUUID: function () {
         console.log("in init uuid");
@@ -31,7 +33,7 @@ angular.module('app.services', [])
       getStatus: function () {
         return isParked;
       },
-      updateStatus: function(){
+      updateStatus: function () {
         determineParkingStatus(uuid)
       }
     }
@@ -65,7 +67,9 @@ angular.module('app.services', [])
             "/v1/park/locate/for/" + user.getId())
           .then(function (response) {
             markers = response.data;
-            console.log(markers['coordinates']);
+            if (markers['coordinates'] == null) {
+              return null;
+            }
             var loca = [];
             loca[0] = markers['coordinates'][1];
             loca[1] = markers['coordinates'][0];
@@ -108,46 +112,19 @@ angular.module('app.services', [])
 
         map = new google.maps.Map(document.getElementById("map"), mapOptions);
         map.setCenter(latLng);
-        //Wait until the map is loaded
         google.maps.event.addListenerOnce(map, 'idle', function () {
-          addMarkerToMap(latLng, "you");
-          //Load the markers
-          //loadMarkers(position.coords.latitude, position.coords.longitude);
-
+          Markers.locateSpace().then(function (endLoc) {
+            console.log('find coordinates for car:'+ endLoc);
+            if (endLoc != null) {
+              console.log("adding coordinates to map");
+              addMarkerToMap(new google.maps.LatLng(endLoc[0], endLoc[1]), "CAR");
+            }
+          });
+          addMarkerToMap(latLng, "YOU");
         });
 
       }, function (error) {
         alert("Could not get location: " + error);
-      });
-    }
-
-    function refreshMapWithCoordinates() {
-      var options = {timeout: 10000, enableHighAccuracy: true};
-      Markers.locateSpace().then(function (endLoc) {
-        var latLng = new google.maps.LatLng(endLoc[0], endLoc[1]);
-        var mapOptions = {
-          center: latLng,
-          zoom: 18,
-          disableDefaultUI: true, // a way to quickly hide all controls
-          mapTypeControl: false,
-          scaleControl: true,
-          zoomControl: false,
-          zoomControlOptions: {
-            style: google.maps.ZoomControlStyle.LARGE
-          },
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-
-        map = new google.maps.Map(document.getElementById("mapOfCar"), mapOptions);
-        map.setCenter(latLng);
-        //Wait until the map is loaded
-        google.maps.event.addListenerOnce(map, 'idle', function () {
-          addMarkerToMap(latLng, "Car");
-          //Load the markers
-          //loadMarkers(position.coords.latitude, position.coords.longitude);
-
-        });
-
       });
     }
 
@@ -243,9 +220,6 @@ angular.module('app.services', [])
       },
       navigateToDest: function () {
         launchNavigatorApp();
-      },
-      initMapOfCar: function () {
-        refreshMapWithCoordinates();
       },
       vacateLocation: function () {
         Markers.vacateSpace();
