@@ -11,10 +11,19 @@
     </form>
     <!--    <div class="button-bar"></div>
         <div class="button-bar"></div>-->
-      <div id="park" class="button-bar">
-        <a ui-sref="locateVacate" class="button button-royal button-block button-large icon-right ion-pin button-full"
-           ng-click="parkVehicle()">Park</a>
-      </div>
+    <div id="park" class="button-bar">
+      <button class="button button-royal button-block button-large icon-right ion-pin button-full" ng-disabled="parkStatus()"
+              ng-click="parkVehicle()">Park
+      </button>
+    </div>
+    <div id="locateVacate" class="button-bar">
+      <button class="button button-calm button-block button-large icon-right ion-model-s button-full"
+              ng-click="navigateToCar()" ng-disabled="!parkStatus()">Locate
+      </button>
+      <button class="button button-energized button-block button-large icon-right ion-paper-airplane"
+              ng-click="vacate()" ng-disabled="!parkStatus()">Vacate
+      </button>
+    </div>
     <div class="spacer" style="height: 30px;"></div>
   </ion-content>
 </ion-view>

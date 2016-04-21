@@ -29,13 +29,15 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
       function onRequestFailure(error){
         console.error("Accuracy request failed: error code="+error.code+"; error message="+error.message);
         if(error.code !== cordova.plugins.locationAccuracy.ERROR_USER_DISAGREED){
-          if(window.confirm("Failed to automatically set Location Mode to 'High Accuracy'. Would you like to switch to the Location Settings page and do this manually?")){
+          if(window.confirm("Failed to automatically set Location Mode to 'High Accuracy'. " +
+              "Would you like to switch to the Location Settings page and do this manually?")){
             cordova.plugins.diagnostic.switchToLocationSettings();
           }
         }
       }
 
-      cordova.plugins.locationAccuracy.request(onRequestSuccess, onRequestFailure, cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
+      cordova.plugins.locationAccuracy.request(onRequestSuccess, onRequestFailure, 
+        cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
       user.initUUID();
       GoogleMaps.init();
     });

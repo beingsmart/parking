@@ -1,18 +1,38 @@
 angular.module('app.services', [])
 
-  .factory('user', function ($cordovaDevice, $cordovaSQLite) {
+  .factory('user', function ($cordovaDevice, $http) {
     var uuid = null;
+    var isParked=null;
+    function determineParkingStatus(uuid) {
+      $http.get("http://parkingserver-openbigdata.rhcloud.com" +
+          "/v1/park/locate/for/" + uuid)
+        .then(function (response) {
+          markers = response.data;
+          return markers['coordinates'] != null
+
+        }).then(function (status) {
+        isParked=status;
+
+      });
+    }
     return {
       initUUID: function () {
         console.log("in init uuid");
         document.addEventListener("deviceready", function () {
           uuid = $cordovaDevice.getUUID();
+          determineParkingStatus(uuid);
           console.log(uuid + " uuid from init");
         }, false);
       },
       getId: function () {
         console.log(uuid + " from getId");
         return uuid;
+      },
+      getStatus: function () {
+        return isParked;
+      },
+      updateStatus: function(){
+        determineParkingStatus(uuid)
       }
     }
   })
@@ -36,6 +56,7 @@ angular.module('app.services', [])
             "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId())
           .then(function (response) {
             markers = response;
+            user.updateStatus();
             return markers;
           });
       },
@@ -56,6 +77,7 @@ angular.module('app.services', [])
             "/v1/park/vacate/for/" + user.getId())
           .then(function (response) {
             markers = response.data;
+            user.updateStatus();
             return markers;
           });
       }
@@ -101,30 +123,30 @@ angular.module('app.services', [])
 
     function refreshMapWithCoordinates() {
       var options = {timeout: 10000, enableHighAccuracy: true};
-        Markers.locateSpace().then(function (endLoc){
-          var latLng = new google.maps.LatLng(endLoc[0], endLoc[1]);
-          var mapOptions = {
-            center: latLng,
-            zoom: 18,
-            disableDefaultUI: true, // a way to quickly hide all controls
-            mapTypeControl: false,
-            scaleControl: true,
-            zoomControl: false,
-            zoomControlOptions: {
-              style: google.maps.ZoomControlStyle.LARGE
-            },
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-          };
+      Markers.locateSpace().then(function (endLoc) {
+        var latLng = new google.maps.LatLng(endLoc[0], endLoc[1]);
+        var mapOptions = {
+          center: latLng,
+          zoom: 18,
+          disableDefaultUI: true, // a way to quickly hide all controls
+          mapTypeControl: false,
+          scaleControl: true,
+          zoomControl: false,
+          zoomControlOptions: {
+            style: google.maps.ZoomControlStyle.LARGE
+          },
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
 
-          map = new google.maps.Map(document.getElementById("mapOfCar"), mapOptions);
-          map.setCenter(latLng);
-          //Wait until the map is loaded
-          google.maps.event.addListenerOnce(map, 'idle', function () {
-            addMarkerToMap(latLng, "Car");
-            //Load the markers
-            //loadMarkers(position.coords.latitude, position.coords.longitude);
+        map = new google.maps.Map(document.getElementById("mapOfCar"), mapOptions);
+        map.setCenter(latLng);
+        //Wait until the map is loaded
+        google.maps.event.addListenerOnce(map, 'idle', function () {
+          addMarkerToMap(latLng, "Car");
+          //Load the markers
+          //loadMarkers(position.coords.latitude, position.coords.longitude);
 
-          });
+        });
 
       });
     }
@@ -137,7 +159,7 @@ angular.module('app.services', [])
     function tagLocation() {
       var options = {timeout: 10000, enableHighAccuracy: true};
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
-        Markers.setVehicleLocation(position.coords.latitude, position.coords.longitude);
+        Markers.setVehicleLocation(position.coords.latitude, position.coords.longitude)
       }, function (error) {
         alert("could not tag location!. Please try again")
       });
@@ -147,17 +169,17 @@ angular.module('app.services', [])
       var options = {timeout: 10000, enableHighAccuracy: true};
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
         var startLoc = [position.coords.latitude, position.coords.longitude];
-        Markers.locateSpace().then(function (endLoc){
+        Markers.locateSpace().then(function (endLoc) {
           $cordovaLaunchNavigator.navigate(endLoc, {
-              start: startLoc,
-              enableDebug: true
-            }).then(function () {
-              alert("Navigator launched");
-            }, function (err) {
-              alert(err);
-            });
+            start: startLoc,
+            enableDebug: true
+          }).then(function () {
+            alert("Navigator launched");
+          }, function (err) {
+            alert(err);
+          });
         });
-        
+
       }, function (error) {
         alert("could not tag location!. Please try again")
       });

@@ -1,6 +1,6 @@
 angular.module('app.controllers', [])
 
-  .controller('findParkCtrl', function ($scope, GoogleMaps) {
+  .controller('findParkCtrl', function ($scope, GoogleMaps, user) {
 
     $scope.focusCurrentLocation = function () {
       return GoogleMaps.init();
@@ -10,12 +10,30 @@ angular.module('app.controllers', [])
       console.log("updating vehicle position");
       GoogleMaps.updateLocation()
     };
+
+    $scope.focusCarLocation = function () {
+      GoogleMaps.initMapOfCar()
+    };
+
+    $scope.vacate = function () {
+      GoogleMaps.vacateLocation()
+    };
+
+    $scope.navigateToCar = function () {
+      GoogleMaps.navigateToDest();
+    };
+
+    $scope.parkStatus = function () {
+      var parked = user.getStatus();
+      console.log("parked value is:"+parked)
+      return parked;
+    };
   })
 
   .controller('locateVacateCtrl', function ($scope, GoogleMaps) {
     $scope.focusCarLocation = function () {
       GoogleMaps.initMapOfCar()
-    }
+    };
     $scope.vacate = function () {
         GoogleMaps.vacateLocation()
     };
