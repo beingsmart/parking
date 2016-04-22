@@ -1,6 +1,6 @@
 angular.module('app.controllers', [])
 
-  .controller('findParkCtrl', function ($scope, GoogleMaps, user) {
+  .controller('findParkCtrl', function ($scope, $ionicLoading, GoogleMaps, user) {
 
     $scope.focusCurrentLocation = function () {
       return GoogleMaps.init();

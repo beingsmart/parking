@@ -38,7 +38,7 @@ angular.module('app.services', [])
       }
     }
   })
-  .factory('Markers', function ($http, user) {
+  .factory('Markers', function ($http, $ionicLoading, user) {
 
     var markers = [];
 
@@ -77,9 +77,11 @@ angular.module('app.services', [])
           });
       },
       vacateSpace: function () {
+        $ionicLoading.show({template: 'Vacating..'});
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
             "/v1/park/vacate/for/" + user.getId())
           .then(function (response) {
+            $ionicLoading.hide();
             markers = response.data;
             user.updateStatus();
             return markers;
@@ -87,13 +89,28 @@ angular.module('app.services', [])
       }
     }
   })
-  .factory('GoogleMaps', function ($cordovaGeolocation, $cordovaLaunchNavigator, $http, Markers) {
+  .factory('GoogleMaps', function ($cordovaGeolocation, $cordovaLaunchNavigator, $http, $ionicLoading, Markers) {
 
     var apiKey = false;
     var map = null;
 
+    var carIcon = {
+      url: "img/car.png", // url
+      scaledSize: new google.maps.Size(50, 50), // scaled size
+      origin: new google.maps.Point(0, 0), // origin
+      anchor: new google.maps.Point(0, 0) // anchor
+    };
+
+    var humanIcon= {
+      url: "img/human.png", // url
+      scaledSize: new google.maps.Size(50, 50), // scaled size
+      origin: new google.maps.Point(0,0), // origin
+      anchor: new google.maps.Point(0, 0) // anchor
+    };
+
     function refreshMap() {
       var options = {timeout: 10000, enableHighAccuracy: true};
+      $ionicLoading.show({template: 'Fetching your location...'});
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
         var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -114,15 +131,15 @@ angular.module('app.services', [])
         map.setCenter(latLng);
         google.maps.event.addListenerOnce(map, 'idle', function () {
           Markers.locateSpace().then(function (endLoc) {
-            console.log('find coordinates for car:'+ endLoc);
+            console.log('find coordinates for car:' + endLoc);
             if (endLoc != null) {
               console.log("adding coordinates to map");
-              addMarkerToMap(new google.maps.LatLng(endLoc[0], endLoc[1]), "CAR");
+              addMarkerToMap(new google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon);
             }
           });
-          addMarkerToMap(latLng, "YOU");
+          addMarkerToMap(latLng, "YOU", humanIcon);
         });
-
+        $ionicLoading.hide()
       }, function (error) {
         alert("Could not get location: " + error);
       });
@@ -134,9 +151,11 @@ angular.module('app.services', [])
     }
 
     function tagLocation() {
+      $ionicLoading.show({template: 'Parking..'});
       var options = {timeout: 10000, enableHighAccuracy: true};
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
-        Markers.setVehicleLocation(position.coords.latitude, position.coords.longitude)
+        Markers.setVehicleLocation(position.coords.latitude, position.coords.longitude);
+        $ionicLoading.hide();
       }, function (error) {
         alert("could not tag location!. Please try again")
       });
@@ -163,11 +182,12 @@ angular.module('app.services', [])
 
     }
 
-    function addMarkerToMap(markerPos, name) {
+    function addMarkerToMap(markerPos, name, iconURL) {
       var marker = new google.maps.Marker({
         map: map,
         animation: google.maps.Animation.DROP,
-        position: markerPos
+        position: markerPos,
+        icon: iconURL
       });
 
       var infoWindowContent = "<h4>" + name + "</h4>";
@@ -223,6 +243,7 @@ angular.module('app.services', [])
       },
       vacateLocation: function () {
         Markers.vacateSpace();
+        refreshMap();
       }
     }
 
