@@ -7,3 +7,4 @@ plugins/
 .idea/
 monetize.md
 my-release-key.keystore
+encrypted/

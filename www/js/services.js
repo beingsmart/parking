@@ -4,6 +4,15 @@ angular.module('app.services', [])
     var uuid = null;
     var isParked = null;
 
+    var adMobId = {
+      admob_banner_key: 'ca-app-pub-9314714208259569/5551960939',
+      admob_interstitial_key: 'ca-app-pub-9314714208259569/9982160530'
+    };
+
+    var adMobPosition = {
+      BOTTOM_CENTER: 8
+    };
+
     function determineParkingStatus(uuid) {
       $http.get("http://parkingserver-openbigdata.rhcloud.com" +
           "/v1/park/locate/for/" + uuid)
@@ -17,12 +26,39 @@ angular.module('app.services', [])
       });
     }
 
+    function showBannerAd() {
+      try {
+
+        console.log('Show Banner Ad');
+
+        AdMob.createBanner({
+          adId: adMobId.admob_banner_key,
+          isTesting: false,
+          position: AdMob.AD_POSITION.BOTTOM_CENTER,
+          autoShow: true
+        });
+
+
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    function showInterstitialAd(){
+      AdMob.prepareInterstitial({
+        adId: adMobId.interstitial,
+        isTesting: false,
+        autoShow: true
+      });
+    }
+
     return {
       initUUID: function () {
         console.log("in init uuid");
         document.addEventListener("deviceready", function () {
           uuid = $cordovaDevice.getUUID();
           determineParkingStatus(uuid);
+          showBannerAd();
           console.log(uuid + " uuid from init");
         }, false);
       },
@@ -35,9 +71,22 @@ angular.module('app.services', [])
       },
       updateStatus: function () {
         determineParkingStatus(uuid)
+      },
+      showInterstitialAd: function (alertPopup) {
+        try {
+          console.log('Show Interstitial Ad');
+          alertPopup.then(function (res) {
+            showInterstitialAd();
+          });
+
+        } catch (e) {
+          console.log(e);
+        }
       }
     }
   })
+
+
   .factory('Markers', function ($http, $ionicLoading, user) {
 
     var markers = [];
@@ -89,7 +138,7 @@ angular.module('app.services', [])
       }
     }
   })
-  .factory('GoogleMaps', function ($cordovaGeolocation, $cordovaLaunchNavigator, $http, $ionicLoading, Markers) {
+  .factory('GoogleMaps', function ($cordovaGeolocation, $cordovaLaunchNavigator, $http, $ionicLoading, Markers, user) {
 
     var apiKey = false;
     var map = null;
@@ -101,10 +150,10 @@ angular.module('app.services', [])
       anchor: new google.maps.Point(0, 0) // anchor
     };
 
-    var humanIcon= {
+    var humanIcon = {
       url: "img/human.png", // url
       scaledSize: new google.maps.Size(50, 50), // scaled size
-      origin: new google.maps.Point(0,0), // origin
+      origin: new google.maps.Point(0, 0), // origin
       anchor: new google.maps.Point(0, 0) // anchor
     };
 
@@ -237,6 +286,7 @@ angular.module('app.services', [])
       },
       updateLocation: function () {
         tagLocation();
+        refreshMap();
       },
       navigateToDest: function () {
         launchNavigatorApp();

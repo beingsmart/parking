@@ -1,6 +1,6 @@
 {
   "name": "Smart Assist",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Smart Assist: Your ride assist",
   "dependencies": {
     "gulp": "^3.5.6",
@@ -30,7 +30,12 @@
       "locator": "https://github.com/litehelpers/Cordova-sqlite-storage.git",
       "id": "cordova-sqlite-storage"
     },
-    "cordova-plugin-request-location-accuracy"
+    "cordova-plugin-request-location-accuracy",
+    {
+      "locator": "https://github.com/appfeel/admob-google-cordova.git",
+      "id": "cordova-admob"
+    },
+    "cordova-plugin-admobpro"
   ],
   "cordovaPlatforms": [
     "android"

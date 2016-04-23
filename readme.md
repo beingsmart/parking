@@ -22,11 +22,14 @@ Just like package dependency management(using maven) plugin dependency managemen
 
 pom.xml is analogous to [config.xml](config.xml)
 
+http://www.gajotres.net/using-google-admob-in-your-android-ionic-application/
+
 
 ###Cordova:
 cordova-plugin-geolocation
 
 plugin.google.maps aka cordova-plugin-googlemaps
+
 
 cordova plugin add plugin-name --save (to save plugin to config.xml
 
