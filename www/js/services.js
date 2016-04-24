@@ -85,7 +85,7 @@ angular.module('app.services', [])
       getMarkers: function (lat, lng) {
 
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/space/near/lat/" + lat + "/lng/" + lng, { cache: false})
+            "/v1/space/near/lat/" + lat + "/lng/" + lng+"?rnd="+new Date().getTime())
           .then(function (response) {
             var markers = response;
             return markers;
@@ -94,7 +94,7 @@ angular.module('app.services', [])
       },
       setVehicleLocation: function (lat, lng) {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId(), { cache: false})
+            "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId()+"?rnd="+new Date().getTime())
           .then(function (response) {
             var markers = response;
             user.updateStatus();
@@ -103,7 +103,7 @@ angular.module('app.services', [])
       },
       locateSpace: function () {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/locate/for/" + user.getId(), { cache: false})
+            "/v1/park/locate/for/" + user.getId()+"?rnd="+new Date().getTime())
           .then(function (response) {
             var markers = response.data;
             if (markers['coordinates'] == null) {
@@ -118,7 +118,7 @@ angular.module('app.services', [])
       vacateSpace: function () {
         $ionicLoading.show({template: 'Vacating..'});
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/vacate/for/" + user.getId(), { cache: false})
+            "/v1/park/vacate/for/" + user.getId()+"?rnd="+new Date().getTime())
           .then(function (response) {
             $ionicLoading.hide();
             var markers = response.data;
