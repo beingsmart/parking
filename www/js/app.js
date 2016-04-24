@@ -24,6 +24,8 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
       }
       function onRequestSuccess(success){
         console.log("Successfully requested accuracy: "+success.message);
+        user.initUUID();
+        GoogleMaps.init();
       }
 
       function onRequestFailure(error){
@@ -36,10 +38,8 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services',
         }
       }
 
-      cordova.plugins.locationAccuracy.request(onRequestSuccess, onRequestFailure, 
+      cordova.plugins.locationAccuracy.request(onRequestSuccess, onRequestFailure,
         cordova.plugins.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY);
-      user.initUUID();
-      GoogleMaps.init();
     });
   })
 
