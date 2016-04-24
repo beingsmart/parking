@@ -15,21 +15,17 @@ angular.module('app.services', [])
 
     function determineParkingStatus(uuid) {
       $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-          "/v1/park/locate/for/" + uuid)
+          "/v1/park/locate/for/" + uuid+ "?rnd="+new Date().getTime())
         .then(function (response) {
-          markers = response.data;
-          return markers['coordinates'] != null
-
+          return response.data['coordinates'] != null
         }).then(function (status) {
-        isParked = status;
+          isParked = status;
 
       });
     }
 
     function showBannerAd() {
       try {
-
-        console.log('Show Banner Ad');
 
         AdMob.createBanner({
           adId: adMobId.admob_banner_key,
@@ -44,7 +40,7 @@ angular.module('app.services', [])
       }
     }
 
-    function showInterstitialAd(){
+    function showInterstitialAd() {
       AdMob.prepareInterstitial({
         adId: adMobId.interstitial,
         isTesting: false,
@@ -54,16 +50,13 @@ angular.module('app.services', [])
 
     return {
       initUUID: function () {
-        console.log("in init uuid");
         document.addEventListener("deviceready", function () {
           uuid = $cordovaDevice.getUUID();
           determineParkingStatus(uuid);
           showBannerAd();
-          console.log(uuid + " uuid from init");
         }, false);
       },
       getId: function () {
-        console.log(uuid + " from getId");
         return uuid;
       },
       getStatus: function () {
@@ -74,7 +67,6 @@ angular.module('app.services', [])
       },
       showInterstitialAd: function (alertPopup) {
         try {
-          console.log('Show Interstitial Ad');
           alertPopup.then(function (res) {
             showInterstitialAd();
           });
@@ -89,33 +81,31 @@ angular.module('app.services', [])
 
   .factory('Markers', function ($http, $ionicLoading, user) {
 
-    var markers = [];
-
     return {
       getMarkers: function (lat, lng) {
 
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/space/near/lat/" + lat + "/lng/" + lng)
+            "/v1/space/near/lat/" + lat + "/lng/" + lng, { cache: false})
           .then(function (response) {
-            markers = response;
+            var markers = response;
             return markers;
           });
 
       },
       setVehicleLocation: function (lat, lng) {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId())
+            "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId(), { cache: false})
           .then(function (response) {
-            markers = response;
+            var markers = response;
             user.updateStatus();
             return markers;
           });
       },
       locateSpace: function () {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/locate/for/" + user.getId())
+            "/v1/park/locate/for/" + user.getId(), { cache: false})
           .then(function (response) {
-            markers = response.data;
+            var markers = response.data;
             if (markers['coordinates'] == null) {
               return null;
             }
@@ -128,10 +118,10 @@ angular.module('app.services', [])
       vacateSpace: function () {
         $ionicLoading.show({template: 'Vacating..'});
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/vacate/for/" + user.getId())
+            "/v1/park/vacate/for/" + user.getId(), { cache: false})
           .then(function (response) {
             $ionicLoading.hide();
-            markers = response.data;
+            var markers = response.data;
             user.updateStatus();
             return markers;
           });
@@ -180,9 +170,7 @@ angular.module('app.services', [])
         map.setCenter(latLng);
         google.maps.event.addListenerOnce(map, 'idle', function () {
           Markers.locateSpace().then(function (endLoc) {
-            console.log('find coordinates for car:' + endLoc);
             if (endLoc != null) {
-              console.log("adding coordinates to map");
               addMarkerToMap(new google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon);
             }
           });
@@ -249,9 +237,6 @@ angular.module('app.services', [])
 
       //Get all of the markers from our Markers factory
       Markers.getMarkers(lat, lng).then(function (markers) {
-
-        console.log("Markers: ", markers);
-
         var records = markers.data;
 
         for (var i = 0; i < records.length; i++) {
