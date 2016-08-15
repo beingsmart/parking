@@ -214,13 +214,23 @@ angular.module('app.services', [])
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
         var startLoc = [position.coords.latitude, position.coords.longitude];
         Markers.locateSpace().then(function (endLoc) {
-          $cordovaLaunchNavigator.navigate(endLoc, {
-            start: startLoc,
-            enableDebug: true
-          }).then(function () {
-            alert("Navigator launched");
-          }, function (err) {
-            alert(err);
+          launchnavigator.isAppAvailable(launchnavigator.APP.GOOGLE_MAPS, function (isAvailable) {
+            var defApp;
+            if(isAvailable) {
+              defApp = launchnavigator.APP.GOOGLE_MAPS;
+            } else {
+              console.warn("GoogleMaps Not available");
+              defApp = launchnavigator.APP.USER_SELECT;
+            }
+            $cordovaLaunchNavigator.navigate(endLoc, {
+              start: startLoc,
+              enableDebug: true,
+              app: defApp
+            }).then(function () {
+              alert("Navigator launched");
+            }, function (err) {
+              alert(err);
+            });
           });
         });
 
