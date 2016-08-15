@@ -135,14 +135,21 @@ angular.module('app.services', [])
 
     var carIcon = {
       url: "img/car.png", // url
-      scaledSize: new google.maps.Size(50, 50), // scaled size
+      //scaledSize: new google.maps.Size(50, 50), // scaled size
       origin: new google.maps.Point(0, 0), // origin
       anchor: new google.maps.Point(0, 0) // anchor
     };
 
     var humanIcon = {
       url: "img/human.png", // url
-      scaledSize: new google.maps.Size(50, 50), // scaled size
+      //scaledSize: new google.maps.Size(50, 50), // scaled size
+      origin: new google.maps.Point(0, 0), // origin
+      anchor: new google.maps.Point(0, 0) // anchor
+    };
+
+    var spotIcon = {
+      url: "img/spot.png", // url
+      //scaledSize: new google.maps.Size(50, 50), // scaled size
       origin: new google.maps.Point(0, 0), // origin
       anchor: new google.maps.Point(0, 0) // anchor
     };
@@ -152,10 +159,12 @@ angular.module('app.services', [])
       $ionicLoading.show({template: 'Fetching your location...'});
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
-        var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        var you_lat = position.coords.latitude;
+        var you_lon = position.coords.longitude;
+          var latLng = new google.maps.LatLng(you_lat, you_lon);
         var mapOptions = {
           center: latLng,
-          zoom: 18,
+          zoom: 16,
           disableDefaultUI: true, // a way to quickly hide all controls
           mapTypeControl: false,
           scaleControl: true,
@@ -172,6 +181,8 @@ angular.module('app.services', [])
           Markers.locateSpace().then(function (endLoc) {
             if (endLoc != null) {
               addMarkerToMap(new google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon);
+            } else{
+              loadMarkers(you_lat, you_lon);
             }
           });
           addMarkerToMap(latLng, "YOU", humanIcon);
@@ -245,7 +256,7 @@ angular.module('app.services', [])
           var markerPos = new google.maps.LatLng(record.lat, record.lng);
 
           // Add the markerto the map
-          addMarkerToMap(markerPos, record.name);
+          addMarkerToMap(markerPos, record.name, spotIcon);
 
         }
 
