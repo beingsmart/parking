@@ -37,7 +37,5 @@
     },
     "cordova-plugin-admobpro"
   ],
-  "cordovaPlatforms": [
-    "android"
-  ]
+  "cordovaPlatforms": []
 }

@@ -2,6 +2,7 @@ angular.module('app.controllers', [])
 
   .controller('findParkCtrl', function ($scope, $ionicLoading, $ionicPopup, GoogleMaps, user) {
 
+    $scope.isLoading=false;
     $scope.focusCurrentLocation = function () {
       return GoogleMaps.init();
     };
