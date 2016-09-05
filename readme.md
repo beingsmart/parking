@@ -50,3 +50,6 @@ http://stackoverflow.com/questions/27768730/ionic-get-users-phone-number
 * MongoDB as store for parking spaces. 
 * Basic webservice to return parking spaces near the user location
 *Integration with the app to get parking spaces near you -- very basic
+
+
+https://github.com/israelidanny/ion-google-place
