@@ -20,6 +20,7 @@ angular.module('app.services', [])
           return response.data['coordinates'] != null
         }).then(function (status) {
           isParked = status;
+          console.log("parking status determined: "+isParked);
 
       });
     }
@@ -53,7 +54,7 @@ angular.module('app.services', [])
         document.addEventListener("deviceready", function () {
           uuid = $cordovaDevice.getUUID();
           determineParkingStatus(uuid);
-          showBannerAd();
+          //showBannerAd();
         }, false);
       },
       getId: function () {
@@ -134,25 +135,28 @@ angular.module('app.services', [])
     var map = null;
 
     var carIcon = {
-      url: "img/car.png", // url
+      url: "img/car.png" // url
       //scaledSize: new google.maps.Size(50, 50), // scaled size
     };
 
     var humanIcon = {
-      url: "img/human.png", // url
+      url: "img/human.png" // url
       //scaledSize: new google.maps.Size(50, 50), // scaled size
     };
 
     var spotIcon = {
-      url: "img/spot.png", // url
+      url: "img/spot.png" // url
       //scaledSize: new google.maps.Size(50, 50), // scaled size
     };
 
+    function setClickableProperty(boolValue) {
+      map.setClickable(boolValue);
+    }
     function refreshMap() {
       plugin.google.maps.Map.isAvailable(function(isAvailable1, message) {
         if(isAvailable1){
           var options = {timeout: 10000, enableHighAccuracy: true};
-         // $ionicLoading.show({template: 'Fetching your location...'});
+         $ionicLoading.show({template: 'Fetching your location...'});
           $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
             var you_lat = position.coords.latitude;
@@ -176,16 +180,16 @@ angular.module('app.services', [])
               'camera': {
                 'latLng': latLng,
                 'tilt': 30,
-                'zoom': 15,
+                'zoom': 16,
                 'bearing': 50
               }
             };
 
-            map = plugin.google.maps.Map.getMap(document.getElementById("map"), mapOptions);
-            map.setCenter(latLng);
-            console.log("setting center");
-           /* $ionicLoading.hide();
-            map.addEventListener(plugin.google.maps.event.MAP_READY, function () {
+            map = plugin.google.maps.Map.getMap(document.getElementById("map_canvas"), mapOptions);
+            $ionicLoading.hide();
+            map.on(plugin.google.maps.event.MAP_READY, function () {
+              map.setCenter(latLng);
+              console.log("setting center");
               Markers.locateSpace().then(function (endLoc) {
                 if (endLoc != null) {
                   addMarkerToMap(new plugin.google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon);
@@ -194,8 +198,8 @@ angular.module('app.services', [])
                   loadMarkers(you_lat, you_lon);
                 }
               });
-              addMarkerToMap(latLng, "YOU", humanIcon);
-            });*/
+              //addMarkerToMap(latLng, "YOU", humanIcon);
+            });
           }, function (error) {
             alert("Could not get location: " + error);
           });
@@ -256,10 +260,10 @@ angular.module('app.services', [])
     function addMarkerToMap(markerPos, name, iconURL) {
       map.addMarker({
         'position': markerPos,
-        'title': name,
+        'title': name/*,
         'icon':{
           'url': iconURL
-        }
+        }*/
       }, function (marker) {
         marker.showInfoWindow();
       });
@@ -284,6 +288,7 @@ angular.module('app.services', [])
           addMarkerToMap(markerPos, record.name, spotIcon);
 
         }
+        console.log("loaded markers count:"+records.length);
 
       });
 
@@ -315,7 +320,10 @@ angular.module('app.services', [])
       vacateLocation: function () {
         Markers.vacateSpace();
         refreshMap();
-      }
+      },
+      mapSetClickable: function (boolValue) {
+        setClickableProperty(boolValue);
+    }
     }
 
   });

@@ -9,12 +9,14 @@ angular.module('app.controllers', [])
 
     $scope.parkVehicle = function () {
       console.log("updating vehicle position");
+      GoogleMaps.mapSetClickable(false);
       GoogleMaps.updateLocation();
       var alertPopup = $ionicPopup.alert({
         title: 'Car Status',
         template: 'Its Parked!'
       });
-      user.showInterstitialAd(alertPopup);
+      GoogleMaps.mapSetClickable(false);
+      //user.showInterstitialAd(alertPopup);
     };
 
 
@@ -28,7 +30,7 @@ angular.module('app.controllers', [])
 
     $scope.parkStatus = function () {
       var parked = user.getStatus();
-      console.log("parked value is:" + parked)
+      console.log("parked value is:" + parked);
       return parked;
     };
   })
