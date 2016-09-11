@@ -136,6 +136,7 @@ angular.module('app.services', [])
     var map = null;
     var parkPos = null;
     var currentLocEvent=plugin.google.maps.event.MAP_LONG_CLICK;
+    var mapReadyEvent=plugin.google.maps.event.MAP_READY;
 
     var carIcon = {
       url: "www/img/car.png"
@@ -183,7 +184,7 @@ angular.module('app.services', [])
 
             map = plugin.google.maps.Map.getMap(document.getElementById("map_canvas"), mapOptions);
             $ionicLoading.hide();
-            map.on(plugin.google.maps.event.MAP_READY, function () {
+            map.on(mapReadyEvent, function () {
               refreshMap(latLng);
             });
             map.on(currentLocEvent, function(currentLoc) {
@@ -314,9 +315,10 @@ angular.module('app.services', [])
 
     return {
       init: function () {
-        initMap();
+        setMap();
       },
       updateLocation: function () {
+        map.clear();
         tagLocation();
         setMap();
       },
