@@ -135,6 +135,7 @@ angular.module('app.services', [])
     var apiKey = false;
     var map = null;
     var parkPos = null;
+    var currentLocEvent=plugin.google.maps.event.MAP_LONG_CLICK;
 
     var carIcon = {
       url: "www/img/car.png"
@@ -147,7 +148,7 @@ angular.module('app.services', [])
     function setClickableProperty(boolValue) {
       map.setClickable(boolValue);
     }
-    function refreshMap() {
+    function setMap() {
       plugin.google.maps.Map.isAvailable(function(isAvailable1, message) {
         if(isAvailable1){
           var options = {timeout: 10000, enableHighAccuracy: true};
@@ -183,17 +184,10 @@ angular.module('app.services', [])
             map = plugin.google.maps.Map.getMap(document.getElementById("map_canvas"), mapOptions);
             $ionicLoading.hide();
             map.on(plugin.google.maps.event.MAP_READY, function () {
-              map.setCenter(latLng);
-              console.log("setting center");
-              Markers.locateSpace().then(function (endLoc) {
-                if (endLoc != null) {
-                  addMarkerToMap(new plugin.google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon['url']);
-                } else{
-                  console.log("loading markers");
-                  loadMarkers(you_lat, you_lon);
-                }
-              });
-              //addMarkerToMap(latLng, "YOU", humanIcon);
+              refreshMap(latLng);
+            });
+            map.on(currentLocEvent, function(currentLoc) {
+              refreshMap(currentLoc);
             });
           }, function (error) {
             alert("Could not get location: " + error);
@@ -206,8 +200,22 @@ angular.module('app.services', [])
     }
 
     function initMap() {
-      refreshMap();
+      setMap();
 
+    }
+
+    function refreshMap(currentLoc){
+      map.setCenter(currentLoc);
+      console.log("setting center");
+      Markers.locateSpace().then(function (endLoc) {
+        if (endLoc != null) {
+          addMarkerToMap(new plugin.google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon['url']);
+        } else{
+          console.log("loading markers");
+          loadMarkers(currentLoc.lat, currentLoc.lng);
+        }
+      });
+      //addMarkerToMap(latLng, "YOU", humanIcon);
     }
 
     function tagLocation() {
@@ -310,7 +318,7 @@ angular.module('app.services', [])
       },
       updateLocation: function () {
         tagLocation();
-        refreshMap();
+        setMap();
       },
       navigateToDest: function () {
         launchNavigatorApp();
@@ -321,7 +329,7 @@ angular.module('app.services', [])
         console.log(parkPos);
         parkPos = null;
         map.clear();
-        refreshMap();
+        setMap();
       },
       mapSetClickable: function (boolValue) {
         setClickableProperty(boolValue);

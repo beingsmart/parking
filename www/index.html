@@ -37,12 +37,7 @@
 </head>
 <body ng-app="app" animation="slide-left-right-ios7" ng-controller="findParkCtrl">
 <ion-content class="has-footer">
-  <div id="map_canvas" data-tap-disabled="false">
-    <div>
-      <button class="button button-icon button-standard icon-right ion-android-locate button-full"
-              ng-click="focusCurrentLocation()"></button>
-    </div>
-  </div>
+  <div id="map_canvas" data-tap-disabled="false"></div>
 </ion-content>
 <ion-footer-bar style="height: 80px;" class="bar-footer">
   <div id="parkOptions" ng-switch on="parkStatus()">
