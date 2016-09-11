@@ -20,6 +20,7 @@ angular.module('app.services', [])
           return response.data['coordinates'] != null
         }).then(function (status) {
           isParked = status;
+          console.log("parking status determined: "+isParked);
 
       });
     }
@@ -53,7 +54,7 @@ angular.module('app.services', [])
         document.addEventListener("deviceready", function () {
           uuid = $cordovaDevice.getUUID();
           determineParkingStatus(uuid);
-          showBannerAd();
+          //showBannerAd();
         }, false);
       },
       getId: function () {
@@ -65,9 +66,10 @@ angular.module('app.services', [])
       updateStatus: function () {
         determineParkingStatus(uuid)
       },
-      showInterstitialAd: function (alertPopup) {
+      showInterstitialAd: function (alertPopup, GoogleMaps) {
         try {
           alertPopup.then(function (res) {
+            GoogleMaps.mapSetClickable(true);
             showInterstitialAd();
           });
 
@@ -132,64 +134,74 @@ angular.module('app.services', [])
 
     var apiKey = false;
     var map = null;
+    var parkPos = null;
 
     var carIcon = {
-      url: "img/car.png", // url
-      //scaledSize: new google.maps.Size(50, 50), // scaled size
-      origin: new google.maps.Point(0, 0), // origin
-      anchor: new google.maps.Point(0, 0) // anchor
-    };
-
-    var humanIcon = {
-      url: "img/human.png", // url
-      //scaledSize: new google.maps.Size(50, 50), // scaled size
-      origin: new google.maps.Point(0, 0), // origin
-      anchor: new google.maps.Point(0, 0) // anchor
+      url: "www/img/car.png"
     };
 
     var spotIcon = {
-      url: "img/spot.png", // url
-      //scaledSize: new google.maps.Size(50, 50), // scaled size
-      origin: new google.maps.Point(0, 0), // origin
-      anchor: new google.maps.Point(0, 0) // anchor
+      url: "www/img/spot.png"
     };
 
+    function setClickableProperty(boolValue) {
+      map.setClickable(boolValue);
+    }
     function refreshMap() {
-      var options = {timeout: 10000, enableHighAccuracy: true};
-      $ionicLoading.show({template: 'Fetching your location...'});
-      $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
+      plugin.google.maps.Map.isAvailable(function(isAvailable1, message) {
+        if(isAvailable1){
+          var options = {timeout: 10000, enableHighAccuracy: true};
+         $ionicLoading.show({template: 'Fetching your location...'});
+          $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
-        var you_lat = position.coords.latitude;
-        var you_lon = position.coords.longitude;
-          var latLng = new google.maps.LatLng(you_lat, you_lon);
-        var mapOptions = {
-          center: latLng,
-          zoom: 16,
-          disableDefaultUI: true, // a way to quickly hide all controls
-          mapTypeControl: false,
-          scaleControl: true,
-          zoomControl: false,
-          zoomControlOptions: {
-            style: google.maps.ZoomControlStyle.LARGE
-          },
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
+            var you_lat = position.coords.latitude;
+            var you_lon = position.coords.longitude;
+            var latLng = new plugin.google.maps.LatLng(you_lat, you_lon);
+            var mapOptions = {
+              'backgroundColor': 'white',
+              'mapType': plugin.google.maps.MapTypeId.ROADMAP,
+              'controls': {
+                'compass': true,
+                'myLocationButton': true,
+                'indoorPicker': true,
+                'zoom': true
+              },
+              'gestures': {
+                'scroll': true,
+                'tilt': true,
+                'rotate': true,
+                'zoom': true
+              },
+              'camera': {
+                'latLng': latLng,
+                'tilt': 30,
+                'zoom': 16,
+                'bearing': 50
+              }
+            };
 
-        map = new google.maps.Map(document.getElementById("map"), mapOptions);
-        map.setCenter(latLng);
-        google.maps.event.addListenerOnce(map, 'idle', function () {
-          Markers.locateSpace().then(function (endLoc) {
-            if (endLoc != null) {
-              addMarkerToMap(new google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon);
-            } else{
-              loadMarkers(you_lat, you_lon);
-            }
+            map = plugin.google.maps.Map.getMap(document.getElementById("map_canvas"), mapOptions);
+            $ionicLoading.hide();
+            map.on(plugin.google.maps.event.MAP_READY, function () {
+              map.setCenter(latLng);
+              console.log("setting center");
+              Markers.locateSpace().then(function (endLoc) {
+                if (endLoc != null) {
+                  addMarkerToMap(new plugin.google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon['url']);
+                } else{
+                  console.log("loading markers");
+                  loadMarkers(you_lat, you_lon);
+                }
+              });
+              //addMarkerToMap(latLng, "YOU", humanIcon);
+            });
+          }, function (error) {
+            alert("Could not get location: " + error);
           });
-          addMarkerToMap(latLng, "YOU", humanIcon);
-        });
-        $ionicLoading.hide()
-      }, function (error) {
-        alert("Could not get location: " + error);
+        }
+        else {
+          console.log('google map plugin not available;')
+        }
       });
     }
 
@@ -241,17 +253,22 @@ angular.module('app.services', [])
     }
 
     function addMarkerToMap(markerPos, name, iconURL) {
-      var marker = new google.maps.Marker({
-        map: map,
-        animation: google.maps.Animation.DROP,
-        position: markerPos,
-        icon: iconURL
+      map.addMarker({
+        'position': markerPos,
+        'title': name,
+        'icon':{
+          'url': iconURL
+        }
+      }, function (marker) {
+        if(name=="CAR"){
+          parkPos = marker;
+        }
+        marker.showInfoWindow();
       });
 
-      var infoWindowContent = "<h4>" + name + "</h4>";
-
-      addInfoWindow(marker, infoWindowContent);
-      //return {marker:marker, infoWindowContent:infoWindowContent};
+      // var infoWindowContent = "<h4>" + name + "</h4>";
+      //
+      // addInfoWindow(marker, infoWindowContent);
     }
 
     function loadMarkers(lat, lng) {
@@ -263,12 +280,13 @@ angular.module('app.services', [])
         for (var i = 0; i < records.length; i++) {
 
           var record = records[i];
-          var markerPos = new google.maps.LatLng(record.lat, record.lng);
+          var markerPos = new plugin.google.maps.LatLng(record.lat, record.lng);
 
           // Add the markerto the map
-          addMarkerToMap(markerPos, record.name, spotIcon);
+          addMarkerToMap(markerPos, record.name, spotIcon['url']);
 
         }
+        console.log("loaded markers count:"+records.length);
 
       });
 
@@ -299,8 +317,15 @@ angular.module('app.services', [])
       },
       vacateLocation: function () {
         Markers.vacateSpace();
+        parkPos.remove();
+        console.log(parkPos);
+        parkPos = null;
+        map.clear();
         refreshMap();
-      }
+      },
+      mapSetClickable: function (boolValue) {
+        setClickableProperty(boolValue);
+    }
     }
 
   });

@@ -11,7 +11,7 @@ angular.module('app.routes', [])
 
       .state('findPark', {
         url: '/',
-        templateUrl: 'templates/findPark.html',
+        templateUrl: 'index.html',
         controller: 'findParkCtrl'
       })
 
