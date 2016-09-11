@@ -15,8 +15,7 @@ angular.module('app.controllers', [])
         title: 'Car Status',
         template: 'Its Parked!'
       });
-      GoogleMaps.mapSetClickable(false);
-      //user.showInterstitialAd(alertPopup);
+      user.showInterstitialAd(alertPopup, GoogleMaps);
     };
 
 

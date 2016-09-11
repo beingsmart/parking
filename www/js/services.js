@@ -66,9 +66,10 @@ angular.module('app.services', [])
       updateStatus: function () {
         determineParkingStatus(uuid)
       },
-      showInterstitialAd: function (alertPopup) {
+      showInterstitialAd: function (alertPopup, GoogleMaps) {
         try {
           alertPopup.then(function (res) {
+            GoogleMaps.mapSetClickable(true);
             showInterstitialAd();
           });
 
@@ -133,20 +134,14 @@ angular.module('app.services', [])
 
     var apiKey = false;
     var map = null;
+    var parkPos = null;
 
     var carIcon = {
-      url: "img/car.png" // url
-      //scaledSize: new google.maps.Size(50, 50), // scaled size
-    };
-
-    var humanIcon = {
-      url: "img/human.png" // url
-      //scaledSize: new google.maps.Size(50, 50), // scaled size
+      url: "www/img/car.png"
     };
 
     var spotIcon = {
-      url: "img/spot.png" // url
-      //scaledSize: new google.maps.Size(50, 50), // scaled size
+      url: "www/img/spot.png"
     };
 
     function setClickableProperty(boolValue) {
@@ -192,7 +187,7 @@ angular.module('app.services', [])
               console.log("setting center");
               Markers.locateSpace().then(function (endLoc) {
                 if (endLoc != null) {
-                  addMarkerToMap(new plugin.google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon);
+                  addMarkerToMap(new plugin.google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon['url']);
                 } else{
                   console.log("loading markers");
                   loadMarkers(you_lat, you_lon);
@@ -260,11 +255,14 @@ angular.module('app.services', [])
     function addMarkerToMap(markerPos, name, iconURL) {
       map.addMarker({
         'position': markerPos,
-        'title': name/*,
+        'title': name,
         'icon':{
           'url': iconURL
-        }*/
+        }
       }, function (marker) {
+        if(name=="CAR"){
+          parkPos = marker;
+        }
         marker.showInfoWindow();
       });
 
@@ -285,7 +283,7 @@ angular.module('app.services', [])
           var markerPos = new plugin.google.maps.LatLng(record.lat, record.lng);
 
           // Add the markerto the map
-          addMarkerToMap(markerPos, record.name, spotIcon);
+          addMarkerToMap(markerPos, record.name, spotIcon['url']);
 
         }
         console.log("loaded markers count:"+records.length);
@@ -319,6 +317,10 @@ angular.module('app.services', [])
       },
       vacateLocation: function () {
         Markers.vacateSpace();
+        parkPos.remove();
+        console.log(parkPos);
+        parkPos = null;
+        map.clear();
         refreshMap();
       },
       mapSetClickable: function (boolValue) {
