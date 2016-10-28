@@ -135,8 +135,7 @@ angular.module('app.services', [])
     var apiKey = false;
     var map = null;
     var parkPos = null;
-    var currentLocEvent=plugin.google.maps.event.MAP_LONG_CLICK;
-    var mapReadyEvent=plugin.google.maps.event.MAP_READY;
+
 
     var carIcon = {
       url: "www/img/car.png"
@@ -151,6 +150,9 @@ angular.module('app.services', [])
     }
     function setMap() {
       plugin.google.maps.Map.isAvailable(function(isAvailable1, message) {
+        var currentLocEvent=plugin.google.maps.event.MAP_LONG_CLICK;
+        var mapReadyEvent=plugin.google.maps.event.MAP_READY;
+
         if(isAvailable1){
           var options = {timeout: 10000, enableHighAccuracy: true};
          $ionicLoading.show({template: 'Fetching your location...'});
