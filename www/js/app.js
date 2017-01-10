@@ -7,7 +7,7 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ngCordova'])
 
-  .run(function ($ionicPlatform, GoogleMaps, user) {
+  .run(function ($ionicPlatform, $cordovaSplashscreen, GoogleMaps, user) {
     $ionicPlatform.ready(function () {
       user.initUUID();
       if (window.cordova && window.cordova.plugins.Keyboard) {
