@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.beingsmart.assist" version="1.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>SmartAssist</name>
+<widget id="com.beingsmart.assist" version="1.2.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Waio</name>
   <description>
-    Your Ride Assist
+    Your Wagon's all in one app
   </description>
   <author email="sarathjiguru@gmail.com" href="http://www.stapplerapp.com/">
     Smart Assist App
@@ -17,7 +17,7 @@
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="AutoHideSplashScreen" value="true"/>
-  <preference name="SplashScreenDelay" value="5000"/>
+  <preference name="SplashScreenDelay" value="7000"/>
   <preference name="loadUrlTimeoutValue" value="700000"/>
   <feature name="SplashScreen">
     <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen"/>

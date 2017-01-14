@@ -1,6 +1,6 @@
 {
   "name": "Smart Assist",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Smart Assist: Your ride assist",
   "dependencies": {
     "gulp": "^3.5.6",
