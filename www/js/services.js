@@ -15,12 +15,12 @@ angular.module('app.services', [])
 
     function determineParkingStatus(uuid) {
       $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-          "/v1/park/locate/for/" + uuid+ "?rnd="+new Date().getTime())
+        "/v1/park/locate/for/" + uuid + "?rnd=" + new Date().getTime())
         .then(function (response) {
           return response.data['coordinates'] != null
         }).then(function (status) {
-          isParked = status;
-          console.log("parking status determined: "+isParked);
+        isParked = status;
+        console.log("parking status determined: " + isParked);
 
       });
     }
@@ -82,21 +82,28 @@ angular.module('app.services', [])
 
 
   .factory('Markers', function ($http, $ionicLoading, user) {
-
+    var markers = null;
     return {
       getMarkers: function (lat, lng) {
 
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/space/near/lat/" + lat + "/lng/" + lng+"?rnd="+new Date().getTime())
+          "/v1/space/near/lat/" + lat + "/lng/" + lng + "?rnd=" + new Date().getTime())
           .then(function (response) {
-            var markers = response;
+            markers = response;
             return markers;
           });
 
       },
+      getFirstMarker: function () {
+        var loca = [];
+        //console.log(markers);
+        loca[0] = markers.data[0]['lat'];
+        loca[1] = markers.data[0]['lng'];
+        return loca;
+      },
       setVehicleLocation: function (lat, lng) {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId()+"?rnd="+new Date().getTime())
+          "/v1/park/at/lat/" + lat + "/lng/" + lng + "/for/" + user.getId() + "?rnd=" + new Date().getTime())
           .then(function (response) {
             var markers = response;
             user.updateStatus();
@@ -105,7 +112,7 @@ angular.module('app.services', [])
       },
       locateSpace: function () {
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/locate/for/" + user.getId()+"?rnd="+new Date().getTime())
+          "/v1/park/locate/for/" + user.getId() + "?rnd=" + new Date().getTime())
           .then(function (response) {
             var markers = response.data;
             if (markers['coordinates'] == null) {
@@ -120,7 +127,7 @@ angular.module('app.services', [])
       vacateSpace: function () {
         $ionicLoading.show({template: 'Vacating..'});
         return $http.get("http://parkingserver-openbigdata.rhcloud.com" +
-            "/v1/park/vacate/for/" + user.getId()+"?rnd="+new Date().getTime())
+          "/v1/park/vacate/for/" + user.getId() + "?rnd=" + new Date().getTime())
           .then(function (response) {
             $ionicLoading.hide();
             var markers = response.data;
@@ -148,14 +155,15 @@ angular.module('app.services', [])
     function setClickableProperty(boolValue) {
       map.setClickable(boolValue);
     }
-    function setMap() {
-      plugin.google.maps.Map.isAvailable(function(isAvailable1, message) {
-        var currentLocEvent=plugin.google.maps.event.MAP_LONG_CLICK;
-        var mapReadyEvent=plugin.google.maps.event.MAP_READY;
 
-        if(isAvailable1){
+    function setMap() {
+      plugin.google.maps.Map.isAvailable(function (isAvailable1, message) {
+        var currentLocEvent = plugin.google.maps.event.MAP_LONG_CLICK;
+        var mapReadyEvent = plugin.google.maps.event.MAP_READY;
+
+        if (isAvailable1) {
           var options = {timeout: 10000, enableHighAccuracy: true};
-         $ionicLoading.show({template: 'Fetching your location...'});
+          $ionicLoading.show({template: 'Fetching your location...'});
           $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
             var you_lat = position.coords.latitude;
@@ -189,7 +197,7 @@ angular.module('app.services', [])
             map.on(mapReadyEvent, function () {
               refreshMap(latLng);
             });
-            map.on(currentLocEvent, function(currentLoc) {
+            map.on(currentLocEvent, function (currentLoc) {
               refreshMap(currentLoc);
             });
           }, function (error) {
@@ -197,7 +205,7 @@ angular.module('app.services', [])
           });
         }
         else {
-          console.log('google map plugin not available;')
+          //console.log('google map plugin not available;')
         }
       });
     }
@@ -207,14 +215,14 @@ angular.module('app.services', [])
 
     }
 
-    function refreshMap(currentLoc){
+    function refreshMap(currentLoc) {
       map.setCenter(currentLoc);
-      console.log("setting center");
+      //console.log("setting center");
       Markers.locateSpace().then(function (endLoc) {
         if (endLoc != null) {
           addMarkerToMap(new plugin.google.maps.LatLng(endLoc[0], endLoc[1]), "CAR", carIcon['url']);
-        } else{
-          console.log("loading markers");
+        } else {
+          //console.log("loading markers");
           loadMarkers(currentLoc.lat, currentLoc.lng);
         }
       });
@@ -236,16 +244,37 @@ angular.module('app.services', [])
       var options = {timeout: 10000, enableHighAccuracy: true};
       $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
         var startLoc = [position.coords.latitude, position.coords.longitude];
-        Markers.locateSpace().then(function (endLoc) {
+        if (user.getStatus()) {
+          Markers.locateSpace().then(function (endLoc) {
+            launchnavigator.isAppAvailable(launchnavigator.APP.GOOGLE_MAPS, function (isAvailable) {
+              var defApp;
+              if (isAvailable) {
+                defApp = launchnavigator.APP.GOOGLE_MAPS;
+              } else {
+                console.warn("GoogleMaps Not available");
+                defApp = launchnavigator.APP.USER_SELECT;
+              }
+              $cordovaLaunchNavigator.navigate(endLoc, {
+                start: startLoc,
+                enableDebug: true,
+                app: defApp
+              }).then(function () {
+                alert("Navigator launched");
+              }, function (err) {
+                alert(err);
+              });
+            });
+          });
+        } else {
           launchnavigator.isAppAvailable(launchnavigator.APP.GOOGLE_MAPS, function (isAvailable) {
             var defApp;
-            if(isAvailable) {
+            if (isAvailable) {
               defApp = launchnavigator.APP.GOOGLE_MAPS;
             } else {
               console.warn("GoogleMaps Not available");
               defApp = launchnavigator.APP.USER_SELECT;
             }
-            $cordovaLaunchNavigator.navigate(endLoc, {
+            $cordovaLaunchNavigator.navigate(Markers.getFirstMarker(), {
               start: startLoc,
               enableDebug: true,
               app: defApp
@@ -255,8 +284,7 @@ angular.module('app.services', [])
               alert(err);
             });
           });
-        });
-
+        }
       }, function (error) {
         alert("could not tag location!. Please try again")
       });
@@ -267,11 +295,11 @@ angular.module('app.services', [])
       map.addMarker({
         'position': markerPos,
         'title': name,
-        'icon':{
+        'icon': {
           'url': iconURL
         }
       }, function (marker) {
-        if(name=="CAR"){
+        if (name == "CAR") {
           parkPos = marker;
         }
         marker.showInfoWindow();
@@ -297,7 +325,7 @@ angular.module('app.services', [])
           addMarkerToMap(markerPos, record.name, spotIcon['url']);
 
         }
-        console.log("loaded markers count:"+records.length);
+        //console.log("loaded markers count:" + records.length);
 
       });
 
@@ -330,14 +358,14 @@ angular.module('app.services', [])
       vacateLocation: function () {
         Markers.vacateSpace();
         parkPos.remove();
-        console.log(parkPos);
+        //console.log(parkPos);
         parkPos = null;
         map.clear();
         setMap();
       },
       mapSetClickable: function (boolValue) {
         setClickableProperty(boolValue);
-    }
+      }
     }
 
   });

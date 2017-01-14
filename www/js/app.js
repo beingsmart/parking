@@ -8,6 +8,9 @@
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.services', 'app.directives', 'ngCordova'])
 
   .run(function ($ionicPlatform, $cordovaSplashscreen, GoogleMaps, user) {
+    setTimeout(function () {
+      $cordovaSplashscreen.hide();
+    }, 3000);
     $ionicPlatform.ready(function () {
       user.initUUID();
       if (window.cordova && window.cordova.plugins.Keyboard) {

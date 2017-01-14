@@ -42,13 +42,16 @@
 <ion-footer-bar style="height: 80px;" class="bar-footer">
   <div id="parkOptions" ng-switch on="parkStatus()">
     <div id="park" class="button-bar" ng-switch-when="false">
+      <button class="button button-calm button-full button-large icon-right ion-model-s"
+              ng-click="navigateToCar()" style="font-size: 25px; height: 80px">Navigate
+      </button>
       <button class="button button-royal button-full button-large icon-centre ion-pin"
-              ng-click="parkVehicle()" style="font-size: 50px;  height: 80px">Park
+              ng-click="parkVehicle()" style="font-size: 25px; height: 80px">Park
       </button>
     </div>
     <div id="locateVacate" style="height: 80px; "class="button-bar" ng-switch-when="true">
       <button class="button button-calm button-full button-large icon-right ion-model-s"
-              ng-click="navigateToCar()" style="font-size: 25px; height: 80px">Locate
+              ng-click="navigateToCar()" style="font-size: 25px; height: 80px">Navigate
       </button>
       <button class="button button-energized button-full button-large icon-right ion-paper-airplane"
               ng-click="vacate()" style="font-size: 25px; height: 80px">Vacate
