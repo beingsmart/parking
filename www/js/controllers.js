@@ -1,8 +1,8 @@
 angular.module('app.controllers', [])
 
-  .controller('findParkCtrl', function ($scope, $ionicLoading, $ionicPopup, GoogleMaps, user) {
+  .controller('findParkCtrl', function ($scope, $ionicLoading, $ionicPopup, GoogleMaps, user, Markers) {
 
-    $scope.isLoading=false;
+    $scope.isLoading = false;
     $scope.focusCurrentLocation = function () {
       return GoogleMaps.init();
     };
@@ -32,6 +32,10 @@ angular.module('app.controllers', [])
       console.log("parked value is:" + parked);
       return parked;
     };
+
+    $scope.isMarkerExists = function () {
+      return Markers.getFirstMarker().length == 0;
+    }
   })
 
   .controller('locateVacateCtrl', function ($scope, GoogleMaps) {

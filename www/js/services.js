@@ -97,8 +97,10 @@ angular.module('app.services', [])
       getFirstMarker: function () {
         var loca = [];
         //console.log(markers);
-        loca[0] = markers.data[0]['lat'];
-        loca[1] = markers.data[0]['lng'];
+        if(markers.data.length>0) {
+          loca[0] = markers.data[0]['lat'];
+          loca[1] = markers.data[0]['lng'];
+        }
         return loca;
       },
       setVehicleLocation: function (lat, lng) {

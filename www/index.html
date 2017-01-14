@@ -43,7 +43,7 @@
   <div id="parkOptions" ng-switch on="parkStatus()">
     <div id="park" class="button-bar" ng-switch-when="false">
       <button class="button button-calm button-full button-large icon-right ion-model-s"
-              ng-click="navigateToCar()" style="font-size: 25px; height: 80px">Navigate
+              ng-click="navigateToCar()" ng-hide="isMarkerExists()" style="font-size: 25px; height: 80px">Navigate
       </button>
       <button class="button button-royal button-full button-large icon-centre ion-pin"
               ng-click="parkVehicle()" style="font-size: 25px; height: 80px">Park
